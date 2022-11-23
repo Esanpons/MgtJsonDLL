@@ -5,38 +5,68 @@ using System.Linq;
 using System.Text;
 
 
+
 namespace MgtJson.Class
 {
     public class ReadJson
     {
         String StringJson;
 
-
         public ReadJson(String NewStringJson)
         {
             StringJson = NewStringJson;
         }
 
-        public String GetValueJson(String TagText)
+        public String GetValueJson_FromTag(String TagText)
         {
-            String ValueText;
-
             JObject JsonObject = JObject.Parse(StringJson);
             var Jtoken = JsonObject.GetValue(TagText);
-            ValueText = Jtoken.ToString();
+            String ValueText = Jtoken.ToString();
 
             return ValueText;
         }
-        public String GetJsonToJson(String JsonTagText)
-        {
-            String JsonValueText;
 
+        public String GetValueJson_FromKeyArray(int KeyArray)
+        {
+            JObject JsonObject = JObject.Parse(StringJson);
+            JProperty property = JsonObject.Properties().ElementAt(KeyArray);
+            String returnValue = property.Value.ToString();
+            return (returnValue);
+        }
+
+        public String GetTagJson_FromKeyArray(int KeyArray)
+        {
+            JObject JsonObject = JObject.Parse(StringJson);
+            JProperty property = JsonObject.Properties().ElementAt(KeyArray);
+            String returnValue = property.Name.ToString();
+            return (returnValue);
+        }
+
+        public String GetValue_FromJsonArray(int KeyArray)
+        {
+            JArray JsonArray = JArray.Parse(StringJson);
+            String returnValue = JsonArray[KeyArray].ToString();
+            return (returnValue);
+        }
+
+        public String GetJson_FormJson(String JsonTagText)
+        {
             JObject JsonObject = JObject.Parse(StringJson);
             var Jtoken = JsonObject.SelectToken(JsonTagText);
-            JsonValueText = Jtoken.ToString();
-
+            String JsonValueText = Jtoken.ToString();
 
             return JsonValueText;
+        }
+        public int GetCountJson()
+        {
+            JObject JsonObject = JObject.Parse(StringJson);
+            return JsonObject.Properties().Count();
+        }
+
+        public int GetCountJsonArray()
+        {
+            JArray JsonArray = JArray.Parse(StringJson);
+            return JsonArray.Count;
         }
 
         public Boolean ExistsTag(String TagText)
@@ -55,21 +85,5 @@ namespace MgtJson.Class
 
             return IsExistsTag;
         }
-
-
-        public int GetCountJsonArray()
-        {
-            JArray JsonArray = JArray.Parse(StringJson);
-            return JsonArray.Count;
-        }
-
-        public String GetJsonTextToJsonArray(int KeyArray)
-        {
-            JArray JsonArray = JArray.Parse(StringJson);
-            var returnValue = JsonArray[KeyArray].ToString();
-            return (returnValue);
-        }
-
-
     }
 }
