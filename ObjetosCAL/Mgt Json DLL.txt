@@ -1,0 +1,168 @@
+OBJECT Codeunit 50000 Mgt Json DLL
+{
+  OBJECT-PROPERTIES
+  {
+    Date=23/11/22;
+    Time=10:03:46;
+    Modified=Yes;
+    Version List=MgtJsonDLL;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE ProcedureCreateJson@1000000000();
+    VAR
+      CreateJsonDLL@1000000002 : DotNet "'MgtJson, Version=1.0.0.1, Culture=neutral, PublicKeyToken=1036d3165c08df63'.MgtJson.Class.CreateJson";
+      Item@1000000000 : Record 27;
+      Customer@1000000001 : Record 18;
+      Contact@1000000003 : Record 5050;
+    BEGIN
+      //inicializamos la variable de crear Json
+      CLEAR(CreateJsonDLL);
+      CreateJsonDLL := CreateJsonDLL.CreateJson();
+
+      //nos posicionamos en las tablas que queremos a¤adir en nuestro Json
+      Customer.FINDFIRST();
+      Contact.SETRANGE("No.",Customer."Primary Contact No.");
+      Contact.FINDFIRST();
+      Item.FINDSET();
+
+      //emepzamos creando el init del Json principal
+      CreateJsonDLL.InitJson();
+
+      //a¤adimos datos a ese Json
+      CreateJsonDLL.AddLine('customer_no',Customer."No.");
+      CreateJsonDLL.AddLine('customer_name',Customer.Name);
+
+      //ahora le a¤adimos un Json anidado a nuestro Json
+      CreateJsonDLL.InitAnidado('contact');
+      CreateJsonDLL.AddLine('contact_name',Contact.Name);
+      CreateJsonDLL.AddLine('contact_adress',Contact.Address);
+      CreateJsonDLL.EndAnidado();
+
+      //creamos el Json Array
+      CreateJsonDLL.InitArray('item');
+
+      //hacemos el buble para a¤adir cada Json dentro de nuestro Json Array.
+      REPEAT
+        CreateJsonDLL.InitJson();
+        CreateJsonDLL.AddLine('no',Item."No.");
+        CreateJsonDLL.AddLine('description',Item.Description);
+        CreateJsonDLL.EndJson();
+      UNTIL Item.NEXT() = 0;
+
+      //cerramos el Json Array y el Json principal
+      CreateJsonDLL.EndArray();
+      CreateJsonDLL.EndJson();
+
+      //devolvemos el Json en formato Texto.
+      MESSAGE(CreateJsonDLL.ReturnJSon());
+    END;
+
+    LOCAL PROCEDURE ProcedureReadJson@1000000001();
+    VAR
+      ReadJsonDLL@1000000002 : DotNet "'MgtJson, Version=1.0.0.1, Culture=neutral, PublicKeyToken=1036d3165c08df63'.MgtJson.Class.ReadJson";
+      ReadJsonDLL2@1000000004 : DotNet "'MgtJson, Version=1.0.0.1, Culture=neutral, PublicKeyToken=1036d3165c08df63'.MgtJson.Class.ReadJson";
+      JsonText@1000000000 : Text;
+      CountJson@1000000001 : Integer;
+      i@1000000003 : Integer;
+    BEGIN
+      //a¤adimos un Json de pruebas
+      JsonText :=
+      '{'+
+      '  "customer_no": "01121212",'+
+      '  "customer_name": "Spotsmeyers Furnishings John",'+
+      '  "contact": {'+
+      '    "contact_name": "Mr. Mike Nash",'+
+      '    "contact_adress": "612 South Sunset Drive"'+
+      '  },'+
+      '  "items": {'+
+      '    "no1": "1000",'+
+      '    "description1": "Bicicleta",'+
+      '    "no2": "1001",'+
+      '    "description2": "Bicicleta ruta",'+
+      '    "no3": "1100",'+
+      '    "description3": "Rueda delantera"'+
+      '  },'+
+      '  "item_jsonarray": ['+
+      '    {'+
+      '      "no": "1000",'+
+      '      "description": "Bicicleta"'+
+      '    },'+
+      '    {'+
+      '      "no": "1001",'+
+      '      "description": "Bicicleta ruta"'+
+      '    },'+
+      '    {'+
+      '      "no": "1100",'+
+      '      "description": "Rueda delantera"'+
+      '    }'+
+      '  ]'+
+      '}';
+
+      //inicializamos la variable de leer Json y le pasamos el  Json en el constructor
+      CLEAR(ReadJsonDLL);
+      ReadJsonDLL := ReadJsonDLL.ReadJson(JsonText);
+
+      // mostramos si existe o no el tag
+      MESSAGE('Existe el Tag "CustNo": ' + FORMAT(ReadJsonDLL.ExistsTag('CustNo')) + '  y el TAG "customer_no": '+FORMAT(ReadJsonDLL.ExistsTag('customer_no')));
+
+      //mostramos dos datos que hay en el Json
+      MESSAGE('Nombre del cliente: ' +ReadJsonDLL.GetValueJson_FromTag('customer_name') + ' N§ cliente: '+ReadJsonDLL.GetValueJson_FromTag('customer_no'));
+
+      //recogemos el Json anidado y lo a¤adimos a una nueva variable
+      JsonText := ReadJsonDLL.GetJson_FormJson('contact');
+      CLEAR(ReadJsonDLL2);
+      ReadJsonDLL2 := ReadJsonDLL2.ReadJson(JsonText);
+
+      //mostramos los datos de dentro del Json anidado
+      MESSAGE('Nombre del contacto: ' +ReadJsonDLL2.GetValueJson_FromTag('contact_name') + ' Direcci¢n contacto: '+ReadJsonDLL2.GetValueJson_FromTag('contact_adress'));
+
+      //recogemos el Json anidado que recorreremos como un array
+      JsonText := ReadJsonDLL.GetJson_FormJson('items');
+      CLEAR(ReadJsonDLL2);
+      ReadJsonDLL2 := ReadJsonDLL2.ReadJson(JsonText);
+
+      // devolvemos el count del Json y lo mostramos
+      CountJson := ReadJsonDLL2.GetCountJson();
+      MESSAGE('total registros en el Json: ' + FORMAT(CountJson));
+
+      //recorremos el Json y mostramos el valor y el tag.
+      FOR i := 0 TO CountJson-1 DO BEGIN
+        MESSAGE('tag: ' + ReadJsonDLL2.GetTagJson_FromKeyArray(i) + '   valor: ' + ReadJsonDLL2.GetValueJson_FromKeyArray(i));
+      END;
+
+      //recogemos el Json array para su lectura
+      JsonText := ReadJsonDLL.GetJson_FormJson('item_jsonarray');
+      CLEAR(ReadJsonDLL);
+      ReadJsonDLL := ReadJsonDLL.ReadJson(JsonText);
+
+      // devolvemos el count del Json Array y lo mostramos
+      CountJson := ReadJsonDLL.GetCountJsonArray();
+      MESSAGE('total registros en Array: ' + FORMAT(CountJson));
+
+      //recorremos el Json Array y mostramos los datos de dentro de cada Json.
+      FOR i := 0 TO CountJson-1 DO BEGIN
+        JsonText := ReadJsonDLL.GetValue_FromJsonArray(i);
+        CLEAR(ReadJsonDLL2);
+        ReadJsonDLL2 := ReadJsonDLL2.ReadJson(JsonText);
+        MESSAGE('No producto: ' + ReadJsonDLL2.GetValueJson_FromTag('no') + '   Descripci¢n: ' + ReadJsonDLL2.GetValueJson_FromTag('description'));
+      END;
+    END;
+
+    BEGIN
+    {
+      #Creado por Esteve Sanpons Carballares.
+      #https://github.com/Esanpons
+      #Se da acceso libre a modificar y utilizar este objeto libremente. Siempre y cuando se haga referencia al autor.
+    }
+    END.
+  }
+}
+
