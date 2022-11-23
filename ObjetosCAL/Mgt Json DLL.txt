@@ -3,7 +3,7 @@ OBJECT Codeunit 50000 Mgt Json DLL
   OBJECT-PROPERTIES
   {
     Date=23/11/22;
-    Time=10:03:46;
+    Time=10:20:50;
     Modified=Yes;
     Version List=MgtJsonDLL;
   }
@@ -135,7 +135,7 @@ OBJECT Codeunit 50000 Mgt Json DLL
 
       //recorremos el Json y mostramos el valor y el tag.
       FOR i := 0 TO CountJson-1 DO BEGIN
-        MESSAGE('tag: ' + ReadJsonDLL2.GetTagJson_FromKeyArray(i) + '   valor: ' + ReadJsonDLL2.GetValueJson_FromKeyArray(i));
+        MESSAGE('tag: ' + ReadJsonDLL2.GetTagJson_FromPosition(i) + '   valor: ' + ReadJsonDLL2.GetValueJson_FromPosition(i));
       END;
 
       //recogemos el Json array para su lectura

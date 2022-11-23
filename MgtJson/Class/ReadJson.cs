@@ -26,26 +26,26 @@ namespace MgtJson.Class
             return ValueText;
         }
 
-        public String GetValueJson_FromKeyArray(int KeyArray)
+        public String GetValueJson_FromPosition(int Position)
         {
             JObject JsonObject = JObject.Parse(StringJson);
-            JProperty property = JsonObject.Properties().ElementAt(KeyArray);
+            JProperty property = JsonObject.Properties().ElementAt(Position);
             String returnValue = property.Value.ToString();
             return (returnValue);
         }
 
-        public String GetTagJson_FromKeyArray(int KeyArray)
+        public String GetTagJson_FromPosition(int Position)
         {
             JObject JsonObject = JObject.Parse(StringJson);
-            JProperty property = JsonObject.Properties().ElementAt(KeyArray);
+            JProperty property = JsonObject.Properties().ElementAt(Position);
             String returnValue = property.Name.ToString();
             return (returnValue);
         }
 
-        public String GetValue_FromJsonArray(int KeyArray)
+        public String GetValue_FromJsonArray(int Position)
         {
             JArray JsonArray = JArray.Parse(StringJson);
-            String returnValue = JsonArray[KeyArray].ToString();
+            String returnValue = JsonArray[Position].ToString();
             return (returnValue);
         }
 
