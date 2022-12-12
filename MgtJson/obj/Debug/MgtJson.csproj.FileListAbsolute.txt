@@ -1,9 +1,4 @@
-C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\bin\Debug\MgtJson.dll
-C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\bin\Debug\MgtJson.pdb
-C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\bin\Debug\Newtonsoft.Json.dll
-C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\bin\Debug\Newtonsoft.Json.xml
 C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\obj\Debug\MgtJson.csproj.AssemblyReference.cache
 C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\obj\Debug\MgtJson.csproj.CoreCompileInputs.cache
-C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\obj\Debug\MgtJson.csproj.CopyComplete
 C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\obj\Debug\MgtJson.dll
 C:\Users\esanpons\Documents\Proyectos\MgtJsonDLL\MgtJson\obj\Debug\MgtJson.pdb
